@@ -64,52 +64,35 @@ reviews:
     - path: 'packages/core/src/stream/**'
       instructions: |
         Withhold a rejected retry attempt's text from the final output. Blanking a tripwired step's `text` is the intended contract, not a bug: do not suggest restoring it.
-        Keep `MastraFinishReason` distinct. `tripwire` means a processor rejected the output, `aborted` means the caller stopped the run. Never collapse one into another.
-        Make every output accessor agree on what `result.text` contains. Flag a change that makes one accessor contradict another about the same result.
-        Preserve the original `MastraError` across a stream boundary, with `name`, `message` and `stack` as plain fields. Never flatten it to a reason string.
-        Log through the registered Mastra logger. Never `console.*`.
-        Bound every buffer, iteration and query with a named limit.
-        Do not suggest deleting or loosening an existing assertion to make a source suggestion fit. A pinned assertion is the contract.
-    - path: 'packages/core/src/loop/**'
-      instructions: |
-        Keep retry bookkeeping out of the caller-visible result. A rejected attempt must not reach the final output.
-        Preserve the original `MastraError` — id, cause, `statusCode` — when wrapping a provider error.
-        Log through the registered Mastra logger. Never `console.*`. Reserve `error` severity for terminal exhaustion; a recovered non-terminal attempt logs at `warn`.
-        Give each network or subprocess call a default abort or timeout, and bound anything that iterates or collects with a named constant.
-        Never add a guard that masks an upstream bug, and never fail silently. Surface the error or abort the stream.
-    - path: 'packages/core/src/processors/**'
-      instructions: |
-        Every processor hook must agree on what `result.text` contains. Flag any change that makes one accessor disagree with another about the same result.
-        A processor rejection sets `MastraFinishReason` to `tripwire`, never `other` or `aborted`. A caller abort is never reported as a tripwire.
-        Preserve the original `MastraError` in tripwire metadata — id, `details.value`, Zod cause — alongside, not instead of, the existing reason string.
-        Never mutate or reorder existing history or system messages; that invalidates the provider prompt cache. Append a new user message at the end.
-        Built-in processors go through the same public registry an external author would use. No hardcoded special cases.
-        Log through the registered Mastra logger. Never `console.*`.
+        Every output accessor must agree on what `result.text` contains. Flag a change that makes one accessor contradict another about the same result.
+        Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
     - path: 'packages/core/src/agent/**'
       instructions: |
         Abort is a property of the segment, not the run id. An aborted run must never re-seed a later lifecycle, and an abort check must never be broadened to reject every enqueue for that run id — later segments of the same run are legitimate.
         Express cancellation with a standard `AbortSignal` or `readable.cancel()` and a typed abort error. Never a bespoke stop method, never a tripwire.
-        Never mutate or reorder existing history or system messages; the provider prompt cache depends on them. Keep tool definitions static.
-        Never issue an unbounded read. Bound by page size or token budget.
-        Log through the registered Mastra logger. Never `console.*`.
+        Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
+    - path: 'packages/core/src/loop/**'
+      instructions: |
+        A recovered, non-terminal retry attempt logs at `warn`; only terminal exhaustion logs at `error`.
+        Bound the loop's iteration count with a named constant, and give every provider or subprocess call a default timeout or abort.
+        Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
+    - path: 'packages/core/src/processors/**'
+      instructions: |
+        A processor rejection sets `MastraFinishReason` to `tripwire`, never `other` or `aborted`. A caller abort is never reported as a tripwire.
+        Built-in processors go through the same public registry an external author would use. No hardcoded special cases, no internal-only APIs.
+        Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
     - path: 'packages/*/src/**/*.test.ts'
       instructions: |
         A regression test must fail on `main` — or with the fix reverted — and pass after it. Flag a test that would pass without the accompanying source change.
         Do not suggest deleting or loosening an existing assertion to make a source suggestion fit. An existing assertion is the pinned contract.
         Gate an async assertion on a real readiness event or `vi.waitFor`, never on a fixed sleep or timer.
-        The test name must describe exactly what it asserts, and the fixture must actually reach that path.
-        Assert the observable outcome — exact text, stored value, state after the call — not that a function was invoked.
-        Restore global state: env in a `finally`, and `afterEach` calling `vi.unstubAllEnvs()`, `vi.unstubAllGlobals()` and `vi.restoreAllMocks()`.
-        Derive types from the exported type, route handler or `satisfies`. Never `as any` on a fixture, payload or hook input.
-        Tests are Vitest and colocated with the source.
+        Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
     - path: 'stores/**'
       instructions: |
         Storage behavior is pinned by the shared conformance suite running against a real database, not by unit tests that assert generated SQL strings.
-        Every adapter implements identical semantics. Flag a change that makes one adapter define a record, an operator or a transfer differently from the others.
-        An adapter-specific option stays in that adapter's own params type; promote it to core only once several stores converge on it.
-        A new field on a shared storage type must be optional and nullable — older `@mastra/core` peers never send it. Needing a new core API means bumping peerDependencies.
-        Never change how an already-deployed identifier (index or constraint name) is derived; apply a new naming rule only to identifiers that never shipped.
-        ClickHouse tables are append-only: insert a new version and pick the newest on read, never UPDATE or mutate rows.
+        Every adapter implements identical semantics. Flag a change that makes one adapter define a record, an operator or a transfer differently from the others, and keep an adapter-specific option in that adapter's own params type.
+        A new field on a shared storage type must be optional and nullable — older `@mastra/core` peers never send it.
+        Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
   abort_on_close: true
   disable_cache: false
   auto_review:
