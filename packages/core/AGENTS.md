@@ -30,6 +30,5 @@ Streaming, processors, retry and abort:
 API and compatibility:
 
 - Treat a published `.d.ts` field and every package export as public API; narrowing or removing one is breaking even if unreleased. (PR #23675, #20138, #17896, #12020)
-- Make a new field on a shared type optional and nullable for older peers; needing a new core API means bumping peerDeps. (PR #20677, #12295, #12687)
 - Do not widen a contract or change a default inside a bugfix; new behaviour is opt-in and refactors get their own PR. (PR #22872, #22878, #16922, #13634)
 - State an option's enforcement exceptions and unsupported backends in its docs and types, not only the happy contract. (PR #18999, #24336, #23033)

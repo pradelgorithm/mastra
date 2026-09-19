@@ -91,7 +91,7 @@ reviews:
       instructions: |
         Storage behavior is pinned by the shared conformance suite running against a real database, not by unit tests that assert generated SQL strings.
         Every adapter implements identical semantics. Flag a change that makes one adapter define a record, an operator or a transfer differently from the others, and keep an adapter-specific option in that adapter's own params type.
-        A new field on a shared storage type must be optional and nullable — older `@mastra/core` peers never send it.
+        A new field on a shared storage type must be optional and nullable — older `@mastra/core` peers never send it, and needing a new core API means bumping peerDependencies.
         Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
   abort_on_close: true
   disable_cache: false
