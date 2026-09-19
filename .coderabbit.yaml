@@ -1,11 +1,11 @@
+# CodeRabbit configuration. Reference: https://docs.coderabbit.ai/reference/configuration
+# Checked against schema v2 (https://coderabbit.ai/integrations/schema.v2.json); keys are kept in the order the schema declares them.
+# Everything here is advisory: no check can block a merge while `reviews.request_changes_workflow` is false.
 language: en-US
 tone_instructions: ''
 early_access: false
 enable_free_tier: true
 reviews:
-  slop_detection:
-    enabled: true
-    label: 'slop'
   profile: assertive
   request_changes_workflow: false
   high_level_summary: true
@@ -33,6 +33,7 @@ reviews:
   in_progress_fortune: true
   poem: false
   path_filters: []
+  # One source of truth per rule: each block carries only what is specific to its path and points at the AGENTS.md section that states the rule in full.
   path_instructions:
     - path: '.changeset/*.md'
       instructions: |
@@ -95,6 +96,9 @@ reviews:
         Repo-wide and core conventions: root `AGENTS.md` § Review conventions and `packages/core/AGENTS.md` § Conventions.
   abort_on_close: true
   disable_cache: false
+  slop_detection:
+    enabled: true
+    label: 'slop'
   auto_review:
     enabled: true
     auto_incremental_review: true
@@ -134,6 +138,7 @@ reviews:
       enabled: true
     github-checks:
       enabled: true
+      # `timeout_ms` is no longer declared in schema v2 — the integration now exposes only `enabled`. Kept as set; drop it if CodeRabbit starts reporting it as unknown.
       timeout_ms: 90000
     languagetool:
       enabled: true
@@ -185,6 +190,7 @@ knowledge_base:
     enabled: true
   code_guidelines:
     enabled: true
+    # Defaults already cover `**/AGENTS.md` (and so `packages/*/AGENTS.md`), `**/CLAUDE.md`, `**/AGENT.md` and `**/REVIEW.md`; nothing to add.
     filePatterns: []
   learnings:
     scope: auto
